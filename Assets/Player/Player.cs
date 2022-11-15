@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] int _speed;
+    public int _speed = 5;
+
+    public AudioClip audioItem;
+    AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -30,14 +33,37 @@ public class Player : MonoBehaviour
         if (worldpos.x > 0.975f) worldpos.x = 0.975f;
         if (worldpos.y > 0.95f) worldpos.y = 0.95f;
         this.transform.position = Camera.main.ViewportToWorldPoint(worldpos);
-
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collider)
     {
-        if (collision.gameObject.name == "destination1")
+        if (collider.gameObject.name == "destination1")
         {
             transform.position = new Vector3(1, 0, 0);
         }
+
+        if (collider.gameObject.name == "item")
+        {
+            Debug.Log("Item Detected");
+            _speed = _speed + 2;
+            Destroy(collider.gameObject);
+            PlaySound("ITEM");
+        }
+    }
+
+    private void Awake()
+    {
+        this.audioSource = GetComponent<AudioSource>();
+    }
+
+    void PlaySound(string action)
+    {
+        switch (action)
+        {
+            case "ITEM":
+                audioSource.clip = audioItem;
+                break;
+        }
+        audioSource.Play();
     }
 }
